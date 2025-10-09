@@ -1,0 +1,119 @@
+#!/bin/bash
+
+abort()
+{
+    MESSAGE=$1
+
+    if ! [ "$MESSAGE" == "" ];
+    then
+        echo "$MESSAGE"
+        echo ""
+    fi
+
+    exit 1
+}
+
+
+check_for_partition_type()
+{
+    DEV=$1
+    PARTITION_TYPE=$2
+
+    if [ "$DEV" == "" ];
+    then
+        abort "Cannot check the partition type of a unknown device."
+
+    elif [ "$PARTITION_TYPE" == "" ];
+    then
+        abort "I don't know what partition type must find."
+    fi
+
+    echo "Checking unit '$DEV' partition type..."
+
+    echo "$AVAILABLE_PARTITIONS" | grep "${DEV}" | grep -q " TYPE=\"${PARTITION_TYPE}\""
+
+    if [ "$?" == "0" ];
+    then
+        export PARTITION_TYPE_FLAG="-t exfat"
+        export MOUNT_OPTS="-o uid=$(id -u),gid=$(id -g)"
+
+        echo "Detected exFAT partition."
+
+    else
+        echo "$PARTITION_INFO" | grep "${DEV}" | grep -q ' TYPE="ntfs"'
+
+        if [ "$?" == "0" ];
+        then
+            export PARTITION_TYPE_FLAG="-t ntfs"
+            export MOUNT_OPTS="-o uid=$(id -u),gid=$(id -g)"
+
+            echo "Detected NTFS partition."
+
+        else
+            echo "No Windows partition detected. Must be Linux."
+        fi
+    fi
+}
+
+
+usage()
+{
+    echo "Usage: usbmount -dev <device> [mountpoint name]"
+    echo "Usage: usbmount -uuid <device uuid> [mountpoint name]"
+    echo ""
+}
+
+
+
+
+if [ "$1" == "-dev" ];
+then
+    export DEV="$2"
+
+elif [ "$1" == "-uuid" ];
+then
+    export DEV="UUID=\"${2}\""
+
+elif [ "$1" == "" ] || [ "$1" == "-h" ] || [ "$1" == "--help" ];
+then
+    usage
+    abort
+fi
+
+
+export AVAILABLE_PARTITIONS=$(sudo blkid)
+
+
+check_dev_partition_type $DEV
+
+
+if ! [ "$3" == "" ];
+then
+    MOUNT_FOLDER_NAME="${@:3}"
+    MOUNT_POINT="/tmp/usb/$USER/$MOUNT_FOLDER_NAME"
+
+else
+    CURRENT_MOUNTS=$(find /tmp/usb/javier/ -mindepth 1 -type d | wc -l)
+    NEW_MOUNT=$((CURRENT_MOUNT + 1))
+
+    MOUNT_POINT="/tmp/usb/$USER/$NEW_MOUNT"
+fi
+
+if ! [ -d "$MOUNT_POINT" ];
+then
+    mkdir -p "$MOUNT_POINT"
+fi
+
+
+echo "Mounting '$DEV' in '$MOUNT_POINT'..."
+echo ""
+
+sudo mount $PARTITION_TYPE_FLAG $DEV "$MOUNT_POINT" $MOUNT_OPTS
+
+if ! [ "$?" == "0" ];
+then
+    abort "Failed!"
+else
+    echo "Done."
+    echo ""
+fi

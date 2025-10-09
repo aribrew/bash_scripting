@@ -1,0 +1,8 @@
+#!/bin/bash
+
+screen -dmS reverse_tethering bash -c 'cd $HOME/Apps/gnirehtet-rust-linux64; ./gnirehtet autorun;'
+
+echo "Reverse tethering enabled. Any Android device connected by USB will sahre this network."
+echo ""
+
+

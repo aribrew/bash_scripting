@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# Where all the chapter stored
+VIDEO_TS_PATH=$1
+
+# All desired chapters filenames separades by |
+# Example: VTS_01_1.VOB|VTS_01_2.VOB|...
+CHAPTERS=$2
+
+# The desired output filename
+# Example: Video.avi
+OUTPUT=$3
+
+LAST_PATH=$PWD
+
+cd $VIDEO_TS_PATH
+
+ffmpeg -y -i "concat:${CHAPTERS}" -c:v libxvid -q:v 7 -c:a libmp3lame -b:a 128k -ac 2 ${OUTPUT}
+
+cd $LAST_PATH
+

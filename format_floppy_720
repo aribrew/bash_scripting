@@ -1,0 +1,58 @@
+#!/bin/bash
+
+function usage
+{
+    echo "Usage: format_floppy_720 <drive>"
+    echo ""
+}
+
+function check_drive
+{
+    DRIVE=$1
+    floppy_check $DRIVE
+
+    if ! [ "$?" == "0" ];
+    then
+        return 1
+    fi
+}
+
+
+if [ "$1" == "" ];
+then
+    usage 
+    exit 1
+fi
+
+DRIVE=$1
+
+check_drive $DRIVE
+
+if [ "$?" == "1" ];
+then
+    echo "ERROR: Not valid floppy found."
+    echo ""
+    exit 1
+fi
+
+ufiformat -v -f 720 $DRIVE
+
+if [ "$?" == "1" ];
+then
+    echo "ERROR: Format failed."
+    echo ""
+    exit 1
+fi
+
+echo "Formatting done. Creating FAT table..."
+mkfs.fat $DRIVE
+
+if [ "$1" == "1" ];
+then
+    echo "ERROR: Failed creating FAT table."
+    echo ""
+    exit 1
+fi
+
+echo "All done."
+

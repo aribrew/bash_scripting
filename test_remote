@@ -1,0 +1,26 @@
+#!/bin/bash
+
+if [ "$1" == "" ] || [ "$2" == "" ];
+then
+    echo "Usage: test_remote <rclone remote> <path>"
+    echo "Returns 0 in \$? when connection is successful."
+    echo ""
+    exit 1
+fi
+
+RCLONE_REMOTE=$1
+REMOTE_PATH=$2
+
+echo "Testing rclone remote..."
+rclone lsft ${RCLONE_REMOTE}:${REMOTE_PATH} &> /dev/null
+
+if [ "$?" == "0" ];
+then
+    echo "Reachable."
+    exit 0
+else
+    echo "Unreachable."
+    exit 1
+fi
+
+

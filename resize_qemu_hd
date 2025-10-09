@@ -1,0 +1,18 @@
+#!/bin/bash
+
+if [ "$1" == "" ];
+then
+    echo "Usage: resize_qemu_hd <image path> <new size>"
+    echo "New size can be the final new size or an increment/decrement value."
+    echo "Example: - 50G changes the maximum size to 50 GB."
+    echo "         - +10G makes the maximum size 10 GB larger."
+    echo "         - -10G makes the maximum size 10 GB smaller."
+    echo ""
+    exit 1
+fi
+
+IMAGE_PATH=$1
+NEW_SIZE=$2
+
+qemu-img resize $IMAGE_PATH $NEW_SIZE
+

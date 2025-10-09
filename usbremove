@@ -1,0 +1,23 @@
+#!/bin/bash
+
+
+if ! [ "$1" == "" ];
+then
+    MOUNT_POINT=$1
+
+    if [ -d "$MOUNT_POINT" ];
+    then
+        if [[ $MOUNT_POINT == /tmp/usb/${USER}/* ]];
+        then
+            sudo umount $MOUNT_POINT
+
+            if [ "$?" == "0" ];
+            then
+                rm -r $MOUNT_POINT
+
+                echo "Unit un-mounted and temporal mount point removed."
+                echo ""
+            fi
+        fi
+    fi
+fi

@@ -1,0 +1,35 @@
+#!/bin/bash
+
+function usage
+{
+    echo "Usage: dir_empty [path]"
+    echo "       dir_empty -h|--help"
+    echo ""
+    echo "Returns 0 if the given path is empty, 1 otherwise."
+    echo "If no path is provided the current path will be checked."
+    echo ""
+}
+
+if [ "$1" == "-h" ] || [ "$1" == "--help" ];
+then
+    usage
+    exit 1
+fi
+
+
+DIR=$1
+
+
+if [ "${DIR}" == "" ];
+then
+    DIR=$PWD
+fi
+
+items=$(ls "${DIR}" | wc -l)
+
+if [ "${items}" == "0" ];
+then
+    exit 0
+else
+    exit 1
+fi

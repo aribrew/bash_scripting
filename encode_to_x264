@@ -1,0 +1,12 @@
+#!/bin/bash
+
+IN=$1
+OUT=$2
+DEFAULT_AUDIO_TRACK=$3
+
+
+#ffmpeg -i %IN% -c:v libx264 -crf 20 -c:a aac -c:s copy -map 0 -movflags +faststart -default_mode infer_no_subs -disposition:s none %OUT%
+
+ffmpeg -i $IN -c:v libx264 -crf 20 -c:a aac -c:s copy -map 0 -movflags +faststart -disposition:a:0 0 -disposition:a:$DEFAULT_AUDIO_TRACK default -disposition:s none $OUT
+
+
