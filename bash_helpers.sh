@@ -161,6 +161,28 @@ installed()
 }
 
 
+is_newer()
+{
+    FILE_1=$1
+    FILE_2=$2
+
+    if [[ "$FILE_1" == "" ]] || [[ "$FILE_2" == "" ]];
+    then
+        abort "Need two file paths to compare."
+    fi
+
+    FILE_1=$(realpath "$FILE_1")
+    FILE_2=$(realpath "$FILE_2")
+
+    if [[ "$FILE_1" -nt "$FILE_2" ]];
+    then
+        echo -e "First is newer.\n"
+    else
+        echo -e "Second is newer\n."
+    fi
+}
+
+
 lowercase()
 {
     if ! [[ "$1" == "" ]];
@@ -282,6 +304,7 @@ then
     export -f check_port
     export -f check_sudo
     export -f exec_type
+    export -f is_newer
     export -f filext
     export -f lowercase
     export -f os_name
@@ -308,8 +331,16 @@ elif [[ "$1" == "--cmds" ]];
 then
     echo -e "Available cmds:"
     echo -e "---------------"
-    
-    declare -x -F
+
+    CMDS=$(export -f)
+
+    for cmd in "$CMDS";
+    do
+        CMD_NAME=$(echo "$cmd" | cut -d ' ' -f 3)
+        echo "$CMD_NAME"
+    done
+
+    echo ""
     
 elif [[ "$1" == "--path" ]];
 then
