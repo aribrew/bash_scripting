@@ -1,0 +1,97 @@
+#!/bin/bash
+
+create_mountpoint()
+{
+    MOUNT_POINT=$1
+    
+	echo -e "Creating '$MOUNT_POINT' mount point...\n"
+	        
+    mkdir -p "$MOUNT_POINT"
+
+    if ! [[ "$?" == "0" ]];
+    then
+        echo -e "Failed. Trying as root."
+
+        sudo mkdir -p "$MOUNT_POINT"
+
+        if ! [[ "$?" == "0" ]];
+        then
+            echo -e "Cannot create this mount point. No permissions."
+            exit 1
+        fi
+    fi
+
+    echo -e "Done.\n"
+}
+
+
+
+
+DRIVE=$1
+POINT=$2
+
+WIN_OPTIONS="uid=$(id -u cloud),gid=$(id -g cloud),umask=002"
+
+
+if [[ "$DRIVE" == "" ]];
+then
+    echo -e "Need a drive label/device to mount.\n"
+    exit 1
+fi
+
+
+if ! [[ $DRIVE == /dev/* ]] && ! [[ $DRIVE == uuid* ]];
+then
+    echo -e "No device or UUID specified."
+    echo -e "Assuming providing the drive label.\n"
+
+    DRIVE_UUID=$(drive_uuid "$DRIVE")
+
+    if ! [[ $DRIVE_UUID == UUID* ]];
+    then
+        echo -e "Failed finding drive UUID from its label.\n"
+        exit 1
+    fi
+
+    DRIVE="$DRIVE_UUID"
+fi
+
+
+DRIVE_TYPE=$(drive_type "$DRIVE")
+
+
+if ! [[ "$POINT" == "" ]];
+then
+    if ! [[ -d "$POINT" ]];
+    then
+        create_mountpoint "$POINT"
+    fi
+else
+    echo -e "No mount point specified.\n"
+    echo -e "A default one will be created in /tmp/$USER/drives."
+    echo -e "The mount point will have the current date and time as name."
+
+    DATE_AND_TIME=$(date +%d-%m-%y--%H:%M:%S)
+
+    if [[ "$DATE_AND_TIME" == "" ]];
+    then
+        echo -e "Failed obtaining current date and time.\n"
+        exit 1
+    fi
+
+    POINT="/tmp/$USER/drives/$DATE_AND_TIME"
+
+    create_mountpoint "$POINT"
+fi
+
+
+echo -e "Trying to mount drive '$DRIVE' in '$POINT'"
+echo -e "If no errors shows, the drive as mounted."
+
+if [[ "$DRIVE_TYPE" == "vfat" ]] || [[ "$DRIVE_TYPE" == "exfat" ]] ||
+   [[ "$DRIVE_TYPE" == "ntfs" ]];
+then
+    sudo mount -t $DRIVE_TYPE $DRIVE $POINT -o $WIN_OPTIONS
+else
+    sudo mount $DRIVE $POINT
+fi

@@ -13,11 +13,13 @@ UUID=$(sudo blkid | grep " LABEL=\"${DRIVE_LABEL}\"")
 UUID=$(echo "$UUID" | grep -oP ' UUID="[^"]+"' | xargs)
 
 
-if [[ "$UUID" == "" ]];
+if ! [[ $UUID == UUID=* ]];
 then
     echo -e "No drive with label '$DRIVE_LABEL' was found\n".
     exit 1
 fi
 
 
-echo -e "$UUID"
+UUID=$(echo "$UUID" | cut -d '=' -f 2)
+
+echo -e "UUID=\"$UUID\""
