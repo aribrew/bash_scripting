@@ -2,10 +2,10 @@
 
 create_mountpoint()
 {
-    MOUNT_POINT=$1
+    MOUNT_POINT="$1"
     
 	echo -e "Creating '$MOUNT_POINT' mount point...\n"
-	        
+	
     mkdir -p "$MOUNT_POINT"
 
     if ! [[ "$?" == "0" ]];
@@ -26,11 +26,24 @@ create_mountpoint()
 
 
 
-
 DRIVE=$1
 POINT=$2
 
-WIN_OPTIONS="uid=$(id -u cloud),gid=$(id -g cloud),umask=002"
+
+if ! [[ -v AUTH_USER ]];
+then
+    AUTH_USER="$(id -u)"
+fi
+
+if ! [[ -v AUTH_GROUP ]];
+then
+    AUTH_GROUP="$(id -g)"
+fi
+
+
+WIN_OPTIONS="uid=$(id -u ${AUTH_USER}),"
+WIN_OPTIONS+="gid=$(id -g ${AUTH_USER}),"
+WIN_OPTIONS+="umask=002"
 
 
 if [[ "$DRIVE" == "" ]];
@@ -40,11 +53,13 @@ then
 fi
 
 
-if ! [[ $DRIVE == /dev/* ]] && ! [[ $DRIVE == uuid* ]];
+if ! [[ $DRIVE == /dev/* ]] && ! [[ $DRIVE == UUID* ]];
 then
     echo -e "No device or UUID specified."
     echo -e "Assuming providing the drive label.\n"
 
+    LABEL_PROVIDED=1
+    
     DRIVE_UUID=$(drive_uuid "$DRIVE")
 
     if ! [[ $DRIVE_UUID == UUID* ]];
@@ -53,11 +68,11 @@ then
         exit 1
     fi
 
-    DRIVE="$DRIVE_UUID"
+    DRIVE="$DRIVE_UUID"    
 fi
 
 
-DRIVE_TYPE=$(drive_type "$DRIVE")
+DRIVE_TYPE=$(drive_type.sh "$DRIVE")
 
 
 if ! [[ "$POINT" == "" ]];
@@ -69,17 +84,32 @@ then
 else
     echo -e "No mount point specified.\n"
     echo -e "A default one will be created in /tmp/$USER/drives."
-    echo -e "The mount point will have the current date and time as name."
 
-    DATE_AND_TIME=$(date +%d-%m-%y--%H:%M:%S)
+    POINT="/tmp/drives/$USER"
 
-    if [[ "$DATE_AND_TIME" == "" ]];
+    if [[ -v LABEL_PROVIDED ]];
     then
-        echo -e "Failed obtaining current date and time.\n"
-        exit 1
-    fi
+        POINT+="/$DRIVE"
+    else
+        LABEL=$(drive_label.sh "$DRIVE")
 
-    POINT="/tmp/$USER/drives/$DATE_AND_TIME"
+        if ! [[ "$LABEL" == "" ]];
+        then
+            POINT+="/$LABEL"
+        else
+            if [[ -f "$POINT/.drives" ]];
+            then
+                DRIVES=$(cat "$POINT/.drives")
+                DRIVES=$(($DRIVES += 1))
+            else
+                touch "$POINT/.drives"
+                DRIVES=1
+            fi
+
+            echo "$DRIVES" > "$POINT/.drives"
+            POINT+="/unnamed_${DRIVES}"
+        fi
+    fi
 
     create_mountpoint "$POINT"
 fi
