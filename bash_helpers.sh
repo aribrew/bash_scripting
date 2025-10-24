@@ -371,6 +371,10 @@ then
         PERMS="770"
     fi
 
+    if ! [[ -d "$INSTALL_PATH" ]];
+    then
+        mkdir -p "$INSTALL_PATH"
+    fi
 
     $SUDO cp $SCRIPT $INSTALL_PATH/
     $SUDO chmod $PERMS "$INSTALL_PATH/${FILENAME}"
