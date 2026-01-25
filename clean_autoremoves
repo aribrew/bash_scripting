@@ -1,0 +1,46 @@
+#!/bin/bash
+
+if ! [[ -v BASH_HELPERS_LOADED ]];
+then
+    source bash_helpers.sh
+fi
+
+
+if ! [[ -v BASH_HELPERS_LOADED ]];
+then
+    echo -e "Please add bash_helpers.sh to your PATH.\n"
+    exit 1
+fi
+
+
+FILE=$1
+
+if ! [[ "$FILE" == "" ]] && [[ -f "$FILE" ]];
+then
+    PACKAGES=""
+    
+    echo "Processing '$FILE' for packages marked for auto-remove..."
+
+    while IFS= read -r entry;
+    do  
+        PACKAGE=$(echo "$entry" | cut -d ' ' -f 2)
+
+        if ! [[ "$PACKAGE" == "" ]];
+        then
+            PACKAGES+="$PACKAGE "
+        fi
+    done < "$FILE"
+
+    if ! [[ "$PACKAGES" == "" ]];
+    then
+        echo "Marking packages '$PACKAGES' as manually installed."
+        ask_yn "Proceed?"
+
+        echo ""
+        
+        if [[ "$?" == "0" ]];
+        then
+            sudo apt-mark manual $PACKAGES
+        fi
+    fi
+fi

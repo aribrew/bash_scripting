@@ -50,9 +50,9 @@ ask_yn()
 
     if ! [[ "$QUESTION" == "" ]];
     then
-        read -p "$QUESTION" answer
+        read -p "$QUESTION (YS/n): " answer
 
-        if [[ "$answer" == "y" ]] || [[ "$answer" == "s" ]];
+        if [[ "$answer" == "Y" ]] || [[ "$answer" == "S" ]];
         then
             return 0
             
