@@ -13,13 +13,27 @@ then
 fi
 
 
-FILE=$1
+sudo apt-get autoremove --dry-run > /tmp/to_remove
+
+FILE="/tmp/to_remove"
+
+cat "$FILE" | grep "Remv " > /tmp/to_remove.clean
+
+FILE="/tmp/to_remove.clean"
+
 
 if ! [[ "$FILE" == "" ]] && [[ -f "$FILE" ]];
 then
     PACKAGES=""
     
     echo "Processing '$FILE' for packages marked for auto-remove..."
+
+    FILE_CONTENTS=$(cat "$FILE")
+
+    if [[ "$FILE_CONTENTS" == "" ]];
+    then
+        abort "Something is wrong. The '$FILE' generated file is empty."
+    fi
 
     while IFS= read -r entry;
     do  
@@ -33,7 +47,7 @@ then
 
     if ! [[ "$PACKAGES" == "" ]];
     then
-        echo "Marking packages '$PACKAGES' as manually installed."
+        echo -e "\nMarking packages '$PACKAGES' as manually installed\n."
         ask_yn "Proceed?"
 
         echo ""
