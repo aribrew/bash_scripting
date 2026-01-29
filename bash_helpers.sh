@@ -12,7 +12,7 @@ abort()
         echo ""
     fi
 
-    if [[ "$0" == "$SHELL" ]];
+    if [[ "$0" == *bash ]] || [[ "$0" == *zsh ]];
     then
         return 1
     else
@@ -364,6 +364,9 @@ helpers_usage()
     echo "source bash_helpers.sh"
     echo ": Loads the functions in the current shell."
     echo ""
+    echo "bash_helpers.sh --cmds"
+    echo ": List all available exported commands."
+    echo ""
     echo "bash_helpers.sh --install"
     echo ": Installs the helpers."
     echo "  - If NOT using sudo, installs in ~/.local/bin"
@@ -372,8 +375,8 @@ helpers_usage()
     echo "bash_helpers.sh --path"
     echo ": Tells where the helpers are/would be installed."
     echo ""
-    echo "bash_helpers.sh --cmds"
-    echo ": List all available exported commands."
+    echo "bash_helpers.sh --update"
+    echo ": Updates installed script."
     echo ""
 }
 
@@ -483,5 +486,34 @@ then
         
         echo "Bash helpers installed to $INSTALL_PATH."
         echo ""
+    fi
+
+elif [[ "$1" == "--update" ]];
+then
+    cd /tmp
+
+    URL="https://raw.githubusercontent.com/aribrew/bash_scripting"
+    URL+="/refs/heads/main/bash_helpers.sh"
+
+    echo -e "Downloading latest bash_helpers.sh ..."
+    echo -e "--------------------------------------"
+    
+    curl -LO $URL
+
+    if [[ "$?" == "0" ]];
+    then
+        INSTALL_PATH=$(path)
+
+        cp -u bash_helpers.sh "$INSTALL_PATH"
+
+        if [[ "$?" == "0" ]];
+        then
+            echo -e "Done!\n"
+        else
+            abort "Something is wrong. Unable to update local script.\n"
+        fi
+    else
+        rm /tmp/bash_helpers.sh
+        abort "Failed!"
     fi
 fi
