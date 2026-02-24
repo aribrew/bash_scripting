@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# Example script for sending a Commodore Amiga game to our
+# cloud for running it
+
+send ()
+{
+	PACKAGE="$1"
+	PACKAGE_DEST="$2"
+
+	scp -q "$PACKAGE" ${HOST_USER}@${HOST_NAME}:"$PACKAGE_DEST"
+}
+
+
+export HOST_NAME="sunshine"
+export HOST_USER="user"
+
+GAME="$1"
+
+
+if [[ -f "$GAME" ]];
+then
+    GAME=$(realpath "$GAME")
+    GAME_FILENAME=$(basename "$GAME")
+
+    # Initially, send the game to the cloud /tmp dir
+    UPLOADED_GAME="/tmp/$GAME_FILENAME"
+    
+    echo -e "Launching '$GAME_FILENAME' ...\n"
+    send "$GAME" "$UPLOADED_GAME"
+    
+    cloud_play.sh amigaplay "\"$UPLOADED_GAME\""
+fi

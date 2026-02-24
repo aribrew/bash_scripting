@@ -1,0 +1,35 @@
+#!/bin/bash
+
+# Example script for running Commodore Amiga games using RetroArch
+
+GAME="$1"
+
+# Assure the game path does not contains double commas
+GAME=$(echo $GAME | sed 's/\"//g')
+
+EXTRA_ARGS=${@:2}
+
+AMIGA_TMP="/tmp/amiga"
+
+
+if ! [[ -f "$GAME" ]];
+then
+    echo -e "Game '$GAME' not found\n"
+    exit 1
+else
+    if ! [[ -d "$AMIGA_TMP" ]];
+    then
+        mkdir -p "$AMIGA_TMP"
+    fi
+
+    GAME_FILENAME=$(basename "$GAME")
+    UPLOADED_GAME="$AMIGA_TMP/$GAME_FILENAME"
+
+    # The games are received in /tmp, but move them
+    # to $AMIGA_TMP to have things more clean
+    mv "$GAME" "$UPLOADED_GAME"
+
+    flatpak run --user org.libretro.RetroArch \
+                       -L puae \
+                       "$UPLOADED_GAME" $EXTRA_ARGS
+fi
