@@ -103,24 +103,45 @@ then
 fi
 
 
-# In Linux, set the server and app names.
-# In Termux (Android), set the server and app UUIDs.
+# In Linux, set SUNSHINE_HOST and CMDLINE_APP names.
+# In Termux (Android), you must write their UUIDs instead.
 #
 # The UUIDs can be viewed checking the server and app
 # details in the Moonlight Android application.
+#
+# Also, because the server UUID is quite large, and you cannot
+# copy-paste in the Moonlight diálog, you can find it
+# in the sunshine_state.json file.
+# 
+# You can find it inside the sunshine folder
+# (~/.config/sunshine in Linux)
+#
+# Then, find the 'uniqueid' field
+#
+
 
 if [[ -v TERMUX_VERSION ]];
 then
+    TMP="$HOME/tmp"
+	
     export SUNSHINE_HOST="XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
     export CMDLINE_APP="XXXXXXXXXX"
 else
+    TMP="/tmp"
+	
     export SUNSHINE_HOST="sunshine"
     export CMDLINE_APP="Cmdline runner"
 fi
 
 
-export CMDLINE_FILE="/tmp/sunshine_cmdline"
-export CMDLINE_ENV_FILE="/tmp/sunshine_cmdline_env"
+if ! [[ -d "$TMP" ]];
+then
+    mkdir -p "$TMP"
+fi
+
+
+export CMDLINE_FILE="$TMP/sunshine_cmdline"
+export CMDLINE_ENV_FILE="$TMP/sunshine_cmdline_env"
 
 # The cmdline and env file paths must match the one
 # set in the MOONLIGHT_CMDLINE variable, located in the
