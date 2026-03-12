@@ -3,7 +3,7 @@
 
 check_cmdline()
 {
-	CMDLINE="$1"
+    CMDLINE="$1"
 
     CMD=$(echo "$CMDLINE" | cut -d ' ' -f 1)
 
@@ -15,7 +15,7 @@ check_cmdline()
     then
         echo -e "Something failed asking the server for the app...\n"
         exit 1
-        
+
     elif [[ "$CHECK" == "No" ]];
     then
         echo -e "No.\n"
@@ -56,7 +56,7 @@ usage()
 	echo -e "a bunch of entries in the Sunshine's app list."
 	echo -e ""
 	echo -e "Usage: cloud_play.sh <command line>"
-    echo -e ""
+        echo -e ""
 	echo -e "If the app needs setting environment variables"
 	echo -e "add the needed exports in $CMDLINE_ENV_FILE file."
 	echo -e ""
@@ -98,7 +98,7 @@ then
 fi
 
 if ! [[ -v HOST_USER ]];
-then    
+then
     export HOST_USER="user"
 fi
 
@@ -123,7 +123,7 @@ fi
 if [[ -v TERMUX_VERSION ]];
 then
     TMP="$HOME/tmp"
-	
+
     export SUNSHINE_HOST="XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
     export CMDLINE_APP="XXXXXXXXXX"
 else
@@ -146,6 +146,7 @@ export CMDLINE_ENV_FILE="$TMP/sunshine_cmdline_env"
 # The cmdline and env file paths must match the one
 # set in the MOONLIGHT_CMDLINE variable, located in the
 # run_moonlight_cmdline.sh script at server side
+
 REMOTE_CMDLINE_FILE="/tmp/moonlight_cmdline/cmdline"
 REMOTE_ENV_FILE="/tmp/moonlight_cmdline/env"
 

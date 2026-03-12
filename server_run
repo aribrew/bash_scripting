@@ -1,0 +1,41 @@
+#!/bin/bash
+
+
+usage()
+{
+	echo -e "Usage: server_run <user@host> <cmdline>"
+	echo -e ""
+	echo -e "This is the same to run 'ssh user@host cmdline' but here we are"
+	echo -e "loading the ~/.environment file prior executing the command line,"
+	echo -e "and thus, we will have the environment loaded as if we entered"
+	echo -e "into an interactive SSH session.\n"
+}
+
+
+
+
+if [[ "$1" == "" ]];
+then
+    usage
+    exit 1
+fi
+
+
+CONN_STRING="$1"
+CMD_LINE=${@:2}
+
+
+if ! [[ "$CONN_STRING" == "" ]];
+then
+    if ! [[ "$CONN_STRING" == *@* ]];
+    then
+        echo -e "The first param be a connection string: user@server\n"
+        exit 1
+    fi
+
+    if ! [[ "$CMD_LINE" == "" ]];
+    then
+        ssh $CONN_STRING \
+            "source .environment; $CMD_LINE"
+    fi
+fi
