@@ -1,0 +1,47 @@
+#!/bin/bash
+
+VM_DIR=$(realpath $(dirname $0))
+
+
+if [[ -f "$VM_DIR/EFI/OVMF_CODE.fd" ]];
+then
+   echo -e "Add EFI folder, with OVMF_CODE.fd and OVMF_VARS.fd, in VM folder\n"
+   exit 1
+fi
+
+
+
+
+OSK="ourhardworkbythesewordsguardedpleasedontsteal(c)AppleComputerInc"
+
+export QVM_ARCH="x86_64"
+
+if [[ "$QVM_BIOS" == "" ]];
+then
+    if [[ "$QVM_EFI" == "" ]];
+    then
+        export QVM_EFI="EFI/OVMF_CODE.fd"
+    fi
+
+    if [[ "$QVM_EFI_VARS" == "" ]];
+    then
+        export QVM_EFI_VARS="EFI/OVMF_VARS.fd"
+    fi
+fi
+
+export QVM_VGA="qxl"
+export QVM_SPICE_PORT="50020"
+
+export QVM_AUDIO="intel-hda"
+
+export QVM_INCLUDE_USB="1"
+export QVM_INCLUDE_NETWORK="1"
+
+export QVM_EXTRA_DEVICES="-device usb-kbd -device usb-tablet"
+
+export QVM_EXTRA_OPTS="-device isa-applesmc,osk=${OSK} "
+export QVM_EXTRA_OPTS+="-smbios type=2"
+
+
+"${VM_DIR}/boot_qemu_machine.sh"
+

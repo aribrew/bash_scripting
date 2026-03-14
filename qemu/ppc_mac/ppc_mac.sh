@@ -1,0 +1,21 @@
+#!/bin/bash
+
+VM=$(realpath $(dirname $0))
+
+
+export QVM_ARCH="ppc"
+export QVM_MACHINE="mac99"
+export QVM_MACHINE_OPTS="via=pmu"
+
+export QVM_CPU="G4"
+export QVM_CPU_CORES="1"
+
+export QVM_INCLUDE_USB="1"
+export QVM_INCLUDE_NETWORK="1"
+
+export QVM_DISPLAY="sdl"
+
+export QVM_EXTRA_DEVICES="-device usb-kbd -device usb-mouse "
+
+
+"${VM}/boot_qemu_machine.sh"

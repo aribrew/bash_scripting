@@ -1,5 +1,15 @@
 #!/bin/bash
 
+VM=$(realpath $(dirname $0))
+
+
+if [[ -f "$VM_DIR/EFI/OVMF_CODE.fd" ]];
+then
+   echo -e "Add EFI folder, with OVMF_CODE.fd and OVMF_VARS.fd, in VM folder\n"
+   exit 1
+fi
+
+
 export QVM_ARCH="x86_64"
 export QVM_CPU_SMP="6"
 export QVM_CPU_CORES="6"
@@ -15,12 +25,11 @@ export QVM_INCLUDE_NETWORK="1"
 export QVM_FORWARDED_PORTS="hostfwd=tcp::6022-:22"
 export QVM_EXTRA_DEVICES="-device usb-kbd -device usb-tablet"
 
+# Example disks
+#
 #export QVM_HDA="harddrives/Debian_12.qcow2"
 #export QVM_CDROM="iso/debian-12.9.0-amd64-netinst.iso"
 
 export QVM_BOOT_ORDER="c"
 
-echo -e "Config for Linux QVM loaded.\b"
-echo -e "Export (or add) the HD and ISO file paths, if any, in the"
-echo -e "QVM_HDA and QVM_CDROM variables.\n"
-
+"${VM}/boot_qemu_machine.sh"
