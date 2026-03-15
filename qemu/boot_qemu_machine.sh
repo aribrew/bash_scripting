@@ -224,15 +224,21 @@ fi
 
 if ! [[ "$QVM_CPU_CORES" = "" ]];
 then
-    if ! [[ "$QVM_CPU_SMP" == "" ]];
+    if [[ -v QVM_EASY_CORES ]];
     then
-        QEMU_OPTS+="-smp ${QVM_CPU_SMP}"
-        echo "Using SMP ${QVM_CPU_SMP}."
+        QEMU_OPTS+="-smp ${QVM_CPU_CORES},cores=${QVM_CPU_CORES} "
     else
-        QEMU_OPTS+="-smp 1"
-    fi
+        if ! [[ "$QVM_CPU_SMP" == "" ]];
+        then
+            QEMU_OPTS+="-smp ${QVM_CPU_SMP}"
+            echo "Using SMP ${QVM_CPU_SMP}."
+        else
+            QEMU_OPTS+="-smp 1"
+        fi
 
-    QEMU_OPTS+=",cores=${QVM_CPU_CORES} "
+        QEMU_OPTS+=",cores=${QVM_CPU_CORES} "
+    fi
+    
     echo "Using ${QVM_CPU_CORES} core/s."
 fi
 

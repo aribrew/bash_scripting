@@ -11,8 +11,8 @@ fi
 
 
 export QVM_ARCH="x86_64"
-export QVM_CPU_SMP="6"
-export QVM_CPU_CORES="6"
+export QVM_CPU_SMP="4"
+export QVM_CPU_CORES="4"
 export QVM_RAM="6G"
 export QVM_EFI="EFI/OVMF_CODE.fd"
 export QVM_EFI_VARS="EFI/OVMF_VARS.fd"
