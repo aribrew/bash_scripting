@@ -249,6 +249,24 @@ is_newer()
 }
 
 
+is_running()
+{
+    EXEC_NAME="$1"
+
+    if ! [[ "$EXEC_NAME" == "" ]];
+    then
+        PROCESS_ID=$(pgrep -x $EXEC_NAME)
+        
+        if [[ "$?" == "0" ]];
+        then
+            echo -e "Yes\n"
+        fi
+    fi
+
+    echo -e "No\n"
+}
+
+
 lowercase()
 {
     if ! [[ "$1" == "" ]];
