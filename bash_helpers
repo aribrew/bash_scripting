@@ -300,15 +300,15 @@ path()
 {
     if ! [[ "$TERMUX_VERSION" == "" ]];
     then
-        echo "$PREFIX/opt/bin/bash_helpers.sh"
+        echo "$PREFIX/opt/bin/bash_helpers"
         
     else
         if [[ "$HOME" == "/root" ]];
         then
-            echo "/opt/bin/bash_helpers.sh"
+            echo "/opt/bin/bash_helpers"
             
         else
-            echo "$HOME/.local/bin/bash_helpers.sh"
+            echo "$HOME/.local/bin/bash_helpers"
         fi
     fi
 }
@@ -379,21 +379,21 @@ uppercase()
 
 helpers_usage()
 {
-    echo "source bash_helpers.sh"
+    echo "source bash_helpers"
     echo ": Loads the functions in the current shell."
     echo ""
-    echo "bash_helpers.sh --cmds"
+    echo "bash_helpers --cmds"
     echo ": List all available exported commands."
     echo ""
-    echo "bash_helpers.sh --install"
+    echo "bash_helpers --install"
     echo ": Installs the helpers."
     echo "  - If NOT using sudo, installs in ~/.local/bin"
     echo "  - Otherwise installs in /opt/bin"
     echo ""
-    echo "bash_helpers.sh --path"
+    echo "bash_helpers --path"
     echo ": Tells where the helpers are/would be installed."
     echo ""
-    echo "bash_helpers.sh --update"
+    echo "bash_helpers --update"
     echo ": Updates installed script."
     echo ""
 }
@@ -488,22 +488,26 @@ then
 
     if [[ "$?" == "0" ]];
     then
-        grep -q "$INSTALL_PATH" "$HOME/.environment"
+	    if ! [[ -d "$HOME/.envs" ]];
+		then
+		    mkdir -p "$HOME/.envs'
+	    fi
 
-        if ! [[ "$?" == "0" ]];
-        then
-            echo "export PATH=$INSTALL_PATH:\$PATH" >> "$HOME/.environment"
+		if ! [[ -f "$HOME/.envs/bash_helpers" ]];
+		then
+		    URL="https://raw.githubusercontent.com/aribrew/bash_scripting"
+            URL+="/refs/heads/main/.bash_helpers.env"
 
-            grep -q "\$HOME/.environment" "$HOME/.bashrc"
+			curl -LO $URL
 
-            if [[ "$?" == "1" ]];
-            then
-                echo "source \$HOME/.environment" >> "$HOME/.bashrc"
-            fi
-        fi
-        
-        echo "Bash helpers installed to $INSTALL_PATH."
-        echo ""
+			if [[ "$?" == "0" ]];
+			    mv .bash_helpers.env $HOME/.envs/bash_helpers
+			fi
+
+			if [[ -f ".bash_helpers.env" ]];
+			    rm ".bash_helpers.env"
+			fi
+		fi
     fi
 
 elif [[ "$1" == "--update" ]];
@@ -511,7 +515,7 @@ then
     cd /tmp
 
     URL="https://raw.githubusercontent.com/aribrew/bash_scripting"
-    URL+="/refs/heads/main/bash_helpers.sh"
+    URL+="/refs/heads/main/bash_helpers"
 
     echo -e "Downloading latest bash_helpers.sh ..."
     echo -e "--------------------------------------"
@@ -522,7 +526,7 @@ then
     then
         INSTALL_PATH=$(path)
 
-        cp -u bash_helpers.sh "$INSTALL_PATH"
+        cp -u bash_helpers "$INSTALL_PATH"
 
         if [[ "$?" == "0" ]];
         then
@@ -531,7 +535,7 @@ then
             abort "Something is wrong. Unable to update local script.\n"
         fi
     else
-        rm /tmp/bash_helpers.sh
+        rm /tmp/bash_helpers
         abort "Failed!"
     fi
 fi
