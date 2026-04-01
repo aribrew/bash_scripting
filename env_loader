@@ -1,0 +1,11 @@
+#!/bin/bash
+
+if ! [[ -d "$HOME/.envs" ]];
+then
+    mkdir -p "$HOME/.envs"
+fi
+
+for f in ~/.envs/*;
+do
+    source $f;
+done
