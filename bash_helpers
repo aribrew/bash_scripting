@@ -89,14 +89,14 @@ check_deps()
 	
 	REQUIRED_DEPS=$(echo "$REQUIRED_DEPS" | grep "  ${DEPENDS_STR}")
 	REQUIRED_DEPS=$(echo "$REQUIRED_DEPS" | sed "s/  ${DEPENDS_STR} //g")
-	REQUIRED_DEPS=$(echo "$REQUIRED_DEPS" | sed 's/<//g' | sed 's/>//g')
+	REQUIRED_DEPS=$(echo "$REQUIRED_DEPS" | sed "s/<//g" | sed "s/>//g")
 
 	RECOMMENDED_DEPS=$(echo "$RECOMMENDED_DEPS" | grep "  ${RECOMMENDED_STR}")
 	RECOMMENDED_DEPS=$(echo "$RECOMMENDED_DEPS" | sed "s/  ${RECOMMENDED_STR} //g")
-	RECOMMENDED_DEPS=$(echo "$RECOMMENDED_DEPS" | sed 's/<//g' | 's/>//g')
+	RECOMMENDED_DEPS=$(echo "$RECOMMENDED_DEPS" | sed "s/<//g" | "s/>//g")
 
 	ALL_DEPS="$REQUIRED_DEPS"
-	ALL_DEPS+="$RECOMMENDED_DEPS"
+	ALL_DEPS+=" $RECOMMENDED_DEPS"
 
     echo "$ALL_DEPS"
 }
