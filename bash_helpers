@@ -404,6 +404,7 @@ then
     export -f abort
     export -f ask_for
     export -f ask_yn
+    export -f check_deps
     export -f check_if_admin
     export -f check_port
     export -f check_script
